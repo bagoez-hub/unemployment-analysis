@@ -1,0 +1,41 @@
+[user]
+	name = bagoez-hub
+	email = kidmend58@gmail.com
+
+[core]
+	autocrlf = true
+	ignorecase = false
+	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+
+[init]
+	defaultBranch = main
+
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+
+[push]
+	default = simple
+	autoSetupRemote = true
+
+[pull]
+	rebase = false
+
+[fetch]
+	prune = true
+
+[remote "origin"]
+	url = https://github.com/bagoez-hub/unemployment-analysis.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+
+[alias]
+	st = status
+	co = checkout
+	br = branch
+	cm = commit -m
+	lg = log --oneline --graph --decorate --all
+	df = diff
+	ps = push
+	pl = pull
