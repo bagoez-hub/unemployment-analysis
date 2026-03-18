@@ -45,9 +45,9 @@ All figures are in persons (Orang).
 
 ```
 unemployment-analysis/
+├── .github/                                            ✅
+│   └── copilot-instructions.md                         ✅  Project rules and AI coding guidelines
 ├── data/                                               ✅
-│   ├── .github/                                        ✅
-│   │   └── copilot-instructions.md                     ✅  Project rules and AI coding guidelines
 │   ├── raw/                                            ✅  Original, unmodified CSV files from BPS — never edit
 │   │   ├── Pengangguran Menurut Golongan Umur, 2021.csv
 │   │   ├── Pengangguran Menurut Golongan Umur, 2022.csv
@@ -70,6 +70,7 @@ unemployment-analysis/
 │   ├── test_transform.py                               🔲
 │   └── test_visualize.py                               🔲
 ├── outputs/                                            🔲  Generated charts (.png) and interactive figures (.html)
+├── .gitconfig                                          ✅
 ├── .gitignore                                          ✅
 ├── .python-version                                     ✅  Python version pin (managed by uv)
 ├── main.py                                             ✅  Entry point — orchestrates loader → transform → outputs
