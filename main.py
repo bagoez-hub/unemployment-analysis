@@ -5,10 +5,14 @@ from pathlib import Path
 from src.loader import load_all_years
 from src.transform import clean_dataframe, combine_all_years, validate_records
 from src.visualize import (
+    plot_60plus_volatility,
     plot_feb_vs_aug,
     plot_heatmap,
     plot_interactive_trend,
+    plot_national_trend,
+    plot_pernah_vs_tidak_trend,
     plot_trend_by_age_group,
+    plot_youth_share,
 )
 
 PROCESSED_DIR = Path(__file__).resolve().parent / "data" / "processed"
@@ -48,6 +52,18 @@ def main() -> None:
 
     plot_interactive_trend(combined, save=True)
     print("  interactive_trend.html saved.")
+
+    plot_national_trend(combined, save=True)
+    print("  national_trend.png saved.")
+
+    plot_pernah_vs_tidak_trend(combined, save=True)
+    print("  pernah_vs_tidak_trend.png saved.")
+
+    plot_60plus_volatility(combined, save=True)
+    print("  60plus_volatility.png saved.")
+
+    plot_youth_share(combined, save=True)
+    print("  youth_share.png saved.")
 
     print("Pipeline complete.")
 

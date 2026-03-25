@@ -6,10 +6,14 @@ import pandas as pd
 import pytest
 
 from src.visualize import (
+    plot_60plus_volatility,
     plot_feb_vs_aug,
     plot_heatmap,
     plot_interactive_trend,
+    plot_national_trend,
+    plot_pernah_vs_tidak_trend,
     plot_trend_by_age_group,
+    plot_youth_share,
 )
 
 
@@ -90,3 +94,70 @@ class TestPlotHeatmap:
         monkeypatch.setattr(vis, "OUTPUTS_DIR", tmp_path)
         plot_heatmap(sample_df, save=True)
         assert (tmp_path / "heatmap.png").exists()
+
+
+class TestPlotNationalTrend:
+    def test_runs_without_error(self, sample_df: pd.DataFrame) -> None:
+        plot_national_trend(sample_df, save=False)
+
+    def test_saves_file(self, sample_df: pd.DataFrame, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        import src.visualize as vis
+
+        monkeypatch.setattr(vis, "OUTPUTS_DIR", tmp_path)
+        plot_national_trend(sample_df, save=True)
+        assert (tmp_path / "national_trend.png").exists()
+
+
+class TestPlotPernahVsTidakTrend:
+    def test_runs_without_error(self, sample_df: pd.DataFrame) -> None:
+        plot_pernah_vs_tidak_trend(sample_df, save=False)
+
+    def test_saves_file(self, sample_df: pd.DataFrame, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        import src.visualize as vis
+
+        monkeypatch.setattr(vis, "OUTPUTS_DIR", tmp_path)
+        plot_pernah_vs_tidak_trend(sample_df, save=True)
+        assert (tmp_path / "pernah_vs_tidak_trend.png").exists()
+
+
+class TestPlot60PlusVolatility:
+    def test_runs_without_error(self, sample_df: pd.DataFrame) -> None:
+        # sample_df does not have a 60+ row; function should still run without error
+        plot_60plus_volatility(sample_df, save=False)
+
+    def test_runs_with_60plus_data(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        import src.visualize as vis
+
+        rows = []
+        years = [2021, 2022, 2023]
+        periods = ["Februari", "Agustus"]
+        for year in years:
+            for period in periods:
+                pb = 100 + year
+                tpb = 50 + year
+                rows.append(
+                    {
+                        "year": year,
+                        "period": period,
+                        "age_group": "60+",
+                        "pernah_bekerja": pb,
+                        "tidak_pernah_bekerja": tpb,
+                        "jumlah": pb + tpb,
+                    }
+                )
+        df_60 = pd.DataFrame(rows)
+        monkeypatch.setattr(vis, "OUTPUTS_DIR", tmp_path)
+        plot_60plus_volatility(df_60, save=True)
+        assert (tmp_path / "60plus_volatility.png").exists()
+
+
+class TestPlotYouthShare:
+    def test_runs_without_error(self, sample_df: pd.DataFrame) -> None:
+        plot_youth_share(sample_df, save=False)
+
+    def test_saves_file(self, sample_df: pd.DataFrame, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        import src.visualize as vis
+
+        monkeypatch.setattr(vis, "OUTPUTS_DIR", tmp_path)
+        plot_youth_share(sample_df, save=True)
+        assert (tmp_path / "youth_share.png").exists()

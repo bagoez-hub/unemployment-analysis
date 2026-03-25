@@ -132,54 +132,73 @@ Use these checkpoints sequentially during exploratory data analysis to ensure da
 
 ## Possible Analytical Questions
 
+> Each question is paired with the recommended visualization type that answers it.
+
 1. **Which age group has the highest total unemployment across all years?**
    — Is the 20–24 cohort persistently the most affected, as raw totals suggest?
+   *→ Grouped bar chart ranking age groups by total `jumlah` per year.*
 
-2. **How has total unemployment trended from 2021 to 2025?**
-   — Is there a consistent decline post-pandemic, or did it plateau?
+2. **How has national total unemployment trended from 2021 to 2025 across all 10 survey points?**
+   — Is there a consistent post-pandemic decline, or did it plateau after 2024?
+   *→ Single-line chart aggregating all age groups into a national total per survey period.*
 
-3. **What is the February vs. August gap, and is it consistent year to year?**
-   — Does one survey period systematically show higher unemployment?
+3. **What is the February vs. August gap per year, and is it consistent?**
+   — Does one survey period systematically show higher unemployment, and why?
+   *→ Grouped bar chart (Feb vs. Aug per year) to visualise direction and magnitude of gap.*
 
 4. **Which age group shows the steepest year-on-year improvement (reduction)?**
    — Are younger cohorts recovering faster than older ones?
+   *→ YoY % change grouped bar chart, split by survey period.*
 
-5. **How does the ratio of Pernah Bekerja vs. Tidak Pernah Bekerja shift by age group?**
-   — Younger groups are expected to skew toward "never worked"; does this hold?
+5. **How does the Pernah Bekerja vs. Tidak Pernah Bekerja composition vary by age group?**
+   — Younger groups are expected to skew toward "never worked"; does this hold across all years?
+   *→ Stacked bar chart averaged over all periods, one bar per age group.*
 
-6. **Did the 60+ group behave differently from other groups during 2021–2022 (pandemic recovery)?**
-   — Older workers may have exited the labor force rather than registering as unemployed.
+6. **How have national Pernah Bekerja and Tidak Pernah Bekerja totals diverged over time?**
+   — Is re-employment of displaced workers outpacing first-time labor market entry?
+   *→ Dual-line chart tracking both national totals across all 10 survey periods.*
 
-7. **What proportion of total unemployment is accounted for by youth (15–29)?**
-   — How does this youth share change between 2021 and 2025?
+7. **Did the 60+ group behave differently from other groups during 2021–2022?**
+   — The 60+ group shows 100%+ swings between Feb and Aug in 2021–2022; what drives this volatility?
+   *→ Isolated annotated line chart for the 60+ cohort, with large inter-period changes flagged.*
 
-8. **Is there a seasonal pattern in any specific age group between February and August?**
-   — E.g., school/university graduation cycles inflating August figures for 20–24.
+8. **What proportion of total unemployment is accounted for by youth (15–29)?**
+   — Is the youth share declining as the labor market recovers, or structurally fixed?
+   *→ Line chart of youth (15–29) `jumlah` as a percentage of national total per survey period.*
 
-9. **Which years saw the sharpest single-period drops in total unemployment?**
-   — Identifying policy-relevant turning points.
+9. **Is there a seasonal pattern in any specific age group between February and August?**
+   — E.g., graduation cycles inflating August figures for 20–24; informal work suppressing 60+ in February.
+   *→ Computed as `(Aug − Feb) / Feb × 100` per age group per year; visualised as a heatmap.*
 
-10. **How does middle-age unemployment (35–54) compare in magnitude and trend to youth unemployment (15–29)?**
+10. **Which years saw the sharpest single-period drops in total unemployment?**
+    — Identifying policy-relevant turning points in the post-pandemic recovery.
+    *→ YoY % change chart (see Q4); flag bars exceeding −10% or +10% as significant.*
+
+11. **How does middle-age unemployment (35–54) compare in magnitude and trend to youth (15–29)?**
+    — Middle-age cohorts are expected to be more stable; does the data confirm this across all years?
+    *→ Unemployment trend by age group line chart with cohorts visually grouped.*
 
 ---
 
 ## Possible Insights
 
-1. **Youth unemployment dominance** — The 20–24 age group consistently accounts for the largest share of total unemployment across all years and periods, pointing to a structural gap between education completion and labor market absorption.
+1. **Youth unemployment dominance** — The 20–24 age group consistently accounts for ~30–35% of national total unemployment across all years and periods, pointing to a structural gap between education completion and labor market absorption. This share remains largely stable even as total figures decline.
 
-2. **Post-pandemic recovery trajectory** — Total unemployment peaked around 2021 (Agustus: ~9.1 million) and shows a general downward trend toward 2025 (~7.3–7.5 million), suggesting labor market recovery, though the pace varies by age.
+2. **Post-pandemic recovery trajectory** — National total unemployment peaked around Aug 2021 (~9.1 million) and declined to ~7.3–7.5 million by 2024–2025, across 10 consecutive survey points. The decline is not linear — 2022 saw the steepest drop, with 2024–2025 showing signs of plateauing.
 
-3. **Never-employed concentrated in youth** — The `Tidak Pernah Bekerja` category is disproportionately large in the 15–19 and 20–24 brackets, reflecting first-time job seekers — a signal for early-career policy interventions.
+3. **Never-employed concentrated in youth** — The `Tidak Pernah Bekerja` share of total unemployment in Feb 2025 is ~80% for 15–19, ~60% for 20–24, and drops below 25% for groups 35 and older. This gradient confirms first-time job seekers are the structural core of youth unemployment.
 
-4. **Seasonal fluctuation varies by cohort** — August figures for certain age groups (notably 20–24 and 60+) are notably different from February, likely reflecting graduation-driven labor supply surges and informal/seasonal work patterns in older cohorts.
+4. **Pernah Bekerja declining faster than Tidak Pernah Bekerja** — National `pernah_bekerja` totals fell from ~5.5M (Feb 2021) to ~3.6M (Feb 2025), a drop of ~34%. National `tidak_pernah_bekerja` totals remained in the 3.2–3.4M range across the same span — essentially flat. Re-employment of displaced workers is accelerating; first-time labor market entry is not.
 
-5. **60+ group volatility** — The 60+ age group shows large swings between periods (e.g., 195K Feb 2021 vs. 419K Aug 2021), suggesting this cohort's unemployment count is sensitive to how informal and agricultural labor is captured in each survey wave.
+5. **Seasonal fluctuation varies sharply by cohort** — The 15–19 group shows large August spikes driven by school-leavers entering the labor market mid-year (e.g., Aug 2022: 1,856K vs. Feb 2022: 1,134K, a +64% gap). The 60+ group shows even larger swings (Aug 2021: 419K vs. Feb 2021: 196K, +114%), suggesting sensitivity to how informal and agricultural labor is counted across survey waves.
 
-6. **Middle-age stabilization** — Cohorts aged 35–54 show relatively stable and low unemployment compared to youth, indicating stronger labor market attachment once employed, but also slower absolute recovery when displaced.
+6. **60+ group volatility is anomalous** — The 60+ cohort's February–August swing exceeds 100% in 2021 and 2022, far beyond any other age group. This is not characteristic of a retirement-age demographic and should be flagged as a data-capture artefact tied to seasonal informal employment rather than genuine unemployment cycles.
 
-7. **Declining previously-employed unemployment** — The `Pernah Bekerja` totals decline more steeply than `Tidak Pernah Bekerja` across most years, implying re-employment of displaced workers is progressing faster than first-time labor market entry.
+7. **Middle-age stabilization** — Cohorts aged 35–54 combined represent a small and relatively stable share of total unemployment (roughly 15–20%). Their absolute values show mild decline from 2021 to 2025, but far slower relative recovery than youth cohorts — suggesting displaced mid-career workers face longer re-employment durations.
 
-8. **2025 partial stabilization** — 2025 figures hover around 7.3–7.5 million total unemployed, close to 2024 levels, which may indicate the economy is approaching a structural unemployment floor rather than continuing the post-2021 recovery trend.
+8. **2025 structural floor hypothesis** — Total unemployment in 2025 (Feb: ~7.3M, Aug: ~7.5M) is nearly identical to 2024 levels. YoY change magnitude is approaching 0%, consistent with the economy reaching a structural unemployment floor rather than continuing the post-pandemic recovery trend. The `tidak_pernah_bekerja` component being flat despite overall decline reinforces this: cyclical recovery has largely played out; remaining unemployment is structural.
+
+9. **Youth share (15–29) as a leading indicator** — Youth unemployment collectively (15–19 + 20–24 + 25–29) accounts for roughly 60–65% of total national unemployment in 2021, edging down toward 58–60% by 2025. The gradual but slow decline of this share means youth labor market absorption is improving, but remains the dominant policy challenge.
 
 ---
 
@@ -237,7 +256,8 @@ Use these checkpoints sequentially during exploratory data analysis to ensure da
   5. **Data Cleaning & Validation** — transformations, Pydantic validation, sanity checks.
   6. **EDA** — distributions, aggregations, descriptive statistics.
   7. **Visualization** — all charts in logical sequence.
-  8. **Summary / Conclusions** — Markdown cell summarizing key findings.
+  8. **Insights & Interpretation** — Markdown cells explaining what the charts show and why it matters.
+  9. **Summary / Conclusions** — Markdown cell summarizing key findings.
 
 #### Kaggle Compatibility
 - Use **relative paths** for data files. On Kaggle, datasets are mounted at `/kaggle/input/`. Use `pathlib.Path` with a fallback:

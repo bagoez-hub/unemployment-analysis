@@ -202,6 +202,166 @@ def plot_heatmap(df: pd.DataFrame, save: bool = True) -> None:
     _save_or_close(fig, "heatmap.png", save)
 
 
+def plot_national_trend(df: pd.DataFrame, save: bool = True) -> None:
+    """Single-line chart of national total unemployment across all 10 survey points.
+
+    Aggregates all age groups into one national total per survey period.
+    Uses Seaborn on a Matplotlib figure. Saves PNG to outputs/ at 150 dpi.
+    """
+    data = _sorted_time_labels(df)
+    agg = (
+        data.groupby(["time_label", "_sort_key"], observed=True)["jumlah"]
+        .sum()
+        .reset_index()
+        .sort_values("_sort_key")
+    )
+    time_order = agg["time_label"].tolist()
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(agg["time_label"], agg["jumlah"], marker="o", color="#0072B2", linewidth=2)
+    ax.set_xticks(range(len(time_order)))
+    ax.set_xticklabels(time_order, rotation=45, ha="right")
+    ax.set_title("National Total Unemployment Trend (2021–2025)", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Survey Period")
+    ax.set_ylabel("Jumlah Pengangguran (Orang)")
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{int(x):,}"))
+    fig.text(0.5, -0.02, SOURCE_NOTE, ha="center", fontsize=8, color="gray")
+    plt.tight_layout()
+
+    _save_or_close(fig, "national_trend.png", save)
+
+
+def plot_pernah_vs_tidak_trend(df: pd.DataFrame, save: bool = True) -> None:
+    """Dual-line chart of national Pernah Bekerja vs. Tidak Pernah Bekerja totals over time.
+
+    Aggregates both categories across all age groups per survey period.
+    Uses Matplotlib. Saves PNG to outputs/ at 150 dpi.
+    """
+    data = _sorted_time_labels(df)
+    agg = (
+        data.groupby(["time_label", "_sort_key"], observed=True)[
+            ["pernah_bekerja", "tidak_pernah_bekerja"]
+        ]
+        .sum()
+        .reset_index()
+        .sort_values("_sort_key")
+    )
+    time_order = agg["time_label"].tolist()
+    palette = sns.color_palette(COLORBLIND_PALETTE, n_colors=2)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(agg["time_label"], agg["pernah_bekerja"], marker="o", color=palette[0],
+            linewidth=2, label="Pernah Bekerja")
+    ax.plot(agg["time_label"], agg["tidak_pernah_bekerja"], marker="s", color=palette[1],
+            linewidth=2, label="Tidak Pernah Bekerja")
+    ax.set_xticks(range(len(time_order)))
+    ax.set_xticklabels(time_order, rotation=45, ha="right")
+    ax.set_title(
+        "National Pernah Bekerja vs. Tidak Pernah Bekerja Trend (2021–2025)",
+        fontsize=13, fontweight="bold",
+    )
+    ax.set_xlabel("Survey Period")
+    ax.set_ylabel("Jumlah Pengangguran (Orang)")
+    ax.legend(title="Employment History")
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{int(x):,}"))
+    fig.text(0.5, -0.02, SOURCE_NOTE, ha="center", fontsize=8, color="gray")
+    plt.tight_layout()
+
+    _save_or_close(fig, "pernah_vs_tidak_trend.png", save)
+
+
+def plot_60plus_volatility(df: pd.DataFrame, save: bool = True) -> None:
+    """Annotated line chart for the 60+ age group highlighting large inter-period swings.
+
+    Flags any survey point where the absolute change from the previous point
+    exceeds 30% of the prior value. Uses Matplotlib. Saves PNG to outputs/ at 150 dpi.
+
+    Note: The 60+ group includes informal and agricultural workers; its figures are
+    less directly comparable across periods than other age groups.
+    """
+    data = _sorted_time_labels(df)
+    g60 = (
+        data[data["age_group"].astype(str) == "60+"]
+        .sort_values("_sort_key")
+        .reset_index(drop=True)
+    )
+    g60["pct_change"] = g60["jumlah"].pct_change() * 100
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(g60["time_label"], g60["jumlah"], marker="o", color="#D55E00", linewidth=2)
+
+    for _, row in g60.iterrows():
+        if abs(row["pct_change"]) > 30:
+            ax.annotate(
+                f"{row['pct_change']:+.0f}%",
+                xy=(row["time_label"], row["jumlah"]),
+                xytext=(0, 12),
+                textcoords="offset points",
+                ha="center",
+                fontsize=8,
+                color="#D55E00",
+            )
+
+    ax.set_xticks(range(len(g60["time_label"])))
+    ax.set_xticklabels(g60["time_label"].tolist(), rotation=45, ha="right")
+    ax.set_title("60+ Age Group: Unemployment Volatility (2021–2025)", fontsize=13, fontweight="bold")
+    ax.set_xlabel("Survey Period")
+    ax.set_ylabel("Jumlah Pengangguran (Orang)")
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{int(x):,}"))
+    fig.text(
+        0.5, -0.04,
+        f"{SOURCE_NOTE} | Note: 60+ includes informal/agricultural workers; figures vary by survey method.",
+        ha="center", fontsize=8, color="gray",
+    )
+    plt.tight_layout()
+
+    _save_or_close(fig, "60plus_volatility.png", save)
+
+
+def plot_youth_share(df: pd.DataFrame, save: bool = True) -> None:
+    """Line chart of youth (15–29) unemployment as a percentage of national total.
+
+    Youth is defined as the combined 15–19, 20–24, and 25–29 age groups.
+    Uses Matplotlib. Saves PNG to outputs/ at 150 dpi.
+    """
+    youth_groups = {"15-19", "20-24", "25-29"}
+    data = _sorted_time_labels(df)
+    data["age_group_str"] = data["age_group"].astype(str)
+
+    national = (
+        data.groupby(["time_label", "_sort_key"], observed=True)["jumlah"]
+        .sum()
+        .reset_index()
+        .rename(columns={"jumlah": "total"})
+    )
+    youth = (
+        data[data["age_group_str"].isin(youth_groups)]
+        .groupby(["time_label", "_sort_key"], observed=True)["jumlah"]
+        .sum()
+        .reset_index()
+        .rename(columns={"jumlah": "youth"})
+    )
+    merged = national.merge(youth, on=["time_label", "_sort_key"]).sort_values("_sort_key")
+    merged["youth_pct"] = merged["youth"] / merged["total"] * 100
+    time_order = merged["time_label"].tolist()
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(merged["time_label"], merged["youth_pct"], marker="o", color="#009E73", linewidth=2)
+    ax.set_xticks(range(len(time_order)))
+    ax.set_xticklabels(time_order, rotation=45, ha="right")
+    ax.set_title(
+        "Youth (15–29) Unemployment Share of National Total (2021–2025)",
+        fontsize=13, fontweight="bold",
+    )
+    ax.set_xlabel("Survey Period")
+    ax.set_ylabel("Youth Share (%)")
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.1f}%"))
+    fig.text(0.5, -0.02, SOURCE_NOTE, ha="center", fontsize=8, color="gray")
+    plt.tight_layout()
+
+    _save_or_close(fig, "youth_share.png", save)
+
+
 def _age_sort_key(age_group: str) -> int:
     """Return a numeric sort key for an age group string (e.g. '15-19' → 15)."""
     try:
